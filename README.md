@@ -18,7 +18,7 @@ A Flask-based web application that uses deep learning to classify X-ray images b
 - **Image Processing**: OpenCV
 - **Frontend**: HTML5, TailwindCSS, JavaScript
 - **Data Handling**: NumPy, Pillow
-
+<!--
 ## Installation
 
 1. Clone the repository:
@@ -44,7 +44,7 @@ python app.py
 ```
 
 The application will be available at `http://localhost:5000`
-
+-->
 ## Project Structure
 
 ```
@@ -66,7 +66,7 @@ The application will be available at `http://localhost:5000`
 └── templates/
     └── index.html       # Web interface
 ```
-
+<!--
 ## Usage
 
 1. Open the web interface in your browser
