@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Ray Intensity Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-6">
+            <h1 class="text-2xl font-bold text-center mb-8">X-Ray Intensity Classifier</h1>
+            
+            <div class="mb-8">
+                <form id="upload-form" class="space-y-4">
+                    <div class="flex items-center justify-center w-full">
+                        <label class="flex flex-col w-full h-32 border-4 border-dashed hover:bg-gray-100 hover:border-gray-300">
+                            <div class="flex flex-col items-center justify-center pt-7">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-gray-400 group-hover:text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                </svg>
+                                <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
+                                    Select X-ray image
+                                </p>
+                            </div>
+                            <input type="file" class="opacity-0" accept="image/*" id="file-upload" />
+                        </label>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Analyze X-Ray
+                    </button>
+                </form>
+            </div>
+
+            <div id="result" class="hidden">
+                <div class="border-t pt-4">
+                    <h2 class="text-xl font-semibold mb-2">Analysis Result</h2>
+                    <p id="result-message" class="text-gray-700"></p>
+                    <div class="mt-2">
+                        <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+                            <div id="confidence-bar" class="bg-green-500 h-full transition-all duration-500"></div>
+                        </div>
+                        <p id="confidence-text" class="text-sm text-gray-600 mt-1"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file first.');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/classify', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('result').classList.remove('hidden');
+                    document.getElementById('result-message').textContent = result.message;
+                    document.getElementById('confidence-bar').style.width = `${result.confidence}%`;
+                    document.getElementById('confidence-text').textContent = `Confidence: ${result.confidence.toFixed(2)}%`;
+                } else {
+                    alert(result.error || 'An error occurred');
+                }
+            } catch (error) {
+                alert('An error occurred while processing the image');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
